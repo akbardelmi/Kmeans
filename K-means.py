@@ -30,37 +30,44 @@ def cluster_points(X, mu):
     return clusters
 
 
-def reevaluate_centers(mu, clusters):
-    newmu = []
+def reevaluate_centers(centroid, clusters):
+    new_centroid = np.zeros(centroid.shape)
     keys = sorted(clusters.keys())
     for k in keys:
-        newmu.append(np.mean(clusters[k], axis=0))#change to array
-    return newmu
+        new_centroid[k, :] = np.mean(clusters[k], axis=0)
+    return new_centroid
 
 def has_converged(mu, oldmu):
     return (set([tuple(a) for a in mu]) == set([tuple(a) for a in oldmu]))
 
 def find_centers(pts, ctd, dim):
     # Initialize to K random centers
-    oldmu = pts[np.random.choice(int(pts.size/dim),ctd,replace=False)]#change to array
-    mu = pts[np.random.choice(int(pts.size/dim),ctd,replace=False)]#change to array
-    while not has_converged(mu, oldmu):
-        print(mu)
-        oldmu = mu
+    centroid = np.zeros((ctd, dim))
+    old_centroid = np.zeros((ctd, dim))
+    shuffle = np.random.choice(int(pts.size/dim), ctd, replace=False)
+    for i in range(ctd):
+        centroid[i, :] = pts[shuffle[i], :]
+    while not has_converged(centroid, old_centroid):
+        print(centroid)
+        scatter_plot(pts, centroid)
+        old_centroid = centroid
         # Assign all points in X to clusters
-        clusters = cluster_points(pts, mu)
+        clusters = cluster_points(pts, centroid)
         # Reevaluate centers
-        mu = reevaluate_centers(oldmu, clusters)
-    return(mu, clusters)
+        centroid = reevaluate_centers(old_centroid, clusters)
+    return(centroid, clusters)
 
 
 #plot if dimension = 2
-def scatter_plot(pts, ctd):
-    plt.scatter(pts[:, 0], pts[:, 1], color='blue')
-    plt.scatter(ctd[:, 0], pts[:, 1], color='red')
+def scatter_plot(pts, centroid):
+    fig = plt.figure()
+    ax1 = fig.add_subplot(111)
+
+    ax1.scatter(pts[:, 0], pts[:, 1], c='b')
+    ax1.scatter(centroid[:, 0], centroid[:, 1], c='r', marker='*')
     return plt.show()
 
-#scatter_plot(generate_point_uniform(number_of_point,number_of_dimension))
+#scatter_plot(generate_point_uniform(number_of_point, number_of_dimension))
 points = generate_point_uniform(number_of_point,number_of_dimension)
 A,B = find_centers(points,number_of_centroid,number_of_dimension)
 #print(A,B)
