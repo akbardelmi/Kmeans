@@ -8,7 +8,8 @@ import matplotlib.pyplot as plt
 #number_of_point = 1000
 number_of_point = int(input("press input total number of points : "))
 number_of_centroid = int(input("press input total number of centroid : "))
-number_of_dimension = 2
+#number_of_dimension = 2
+number_of_dimension = int(input("press input total number of dimension : "))
 
 #generating random points
 def generate_point_uniform(nb_point,dim):
@@ -49,7 +50,7 @@ def find_centers(pts, ctd, dim):
         centroid[i, :] = pts[shuffle[i], :]
     while not has_converged(centroid, old_centroid):
         print(centroid)
-        scatter_plot(pts, centroid)
+        scatter_plot(pts, centroid, dim)
         old_centroid = centroid
         # Assign all points in X to clusters
         clusters = cluster_points(pts, centroid)
@@ -59,7 +60,9 @@ def find_centers(pts, ctd, dim):
 
 
 #plot if dimension = 2
-def scatter_plot(pts, centroid):
+def scatter_plot(pts, centroid, dim):
+    if dim != 2:
+        return 0
     fig = plt.figure()
     ax1 = fig.add_subplot(111)
 
